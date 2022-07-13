@@ -1,18 +1,22 @@
 #include <iostream>
-#include <cstring>
-#include <cctype>
+#include "Constants.h"
+#include "Game.h"
 
 using namespace std;
 
-int main(int argc, char *args[]) {
+int WinMain(int argc, char *args[]) {  //Why WinMain?!?
 
-    char first_name[20];
-    char last_name[20];
-    char full_name[50];
-    char temp[50];
+    Game *game = new Game();
 
+    game->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    cout << first_name;
+    while (game->IsRunning()) {
+        game->ProcessInput();
+        game->Update();
+        game->Render();
+    }
+
+    game->Destroy();
 
     return 0;
 }
