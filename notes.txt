@@ -1,0 +1,3 @@
+future endeavors:
+
+Create Component "RigidBodyComponent" for velocity, acceleration, and friction, etc.

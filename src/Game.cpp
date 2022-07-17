@@ -1,6 +1,12 @@
 #include <iostream>
 #include "Constants.h"
 #include "Game.h"
+#include "Components/TransformComponents.h"
+#include "../lib/glm/glm.hpp"
+
+
+EntityManager manager;
+SDL_Renderer* Game::renderer;
 
 Game::Game() {
     this->isRunning = false;
@@ -13,11 +19,6 @@ Game::~Game() {
 bool Game::IsRunning() const {
     return this->isRunning;
 }
-
-float projectilePosX = 0.0f;
-float projectilePosY = 0.0f;
-float projectileVelX = 0.1f;
-float projectileVelY = 0.1f;
 
 void Game::Initialize(int width, int height) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -42,8 +43,16 @@ void Game::Initialize(int width, int height) {
         return;
     }
 
+    LoadLevel(0);
+
     isRunning = true;
     return;
+}
+
+void Game::LoadLevel(int levelNumber) {
+    Entity& newEntity(manager.AddEntity("projectile"));
+
+    newEntity.AddComponent<TransformComponent>(0, 0, 20, 20, 32, 32, 1);
 }
 
 void Game::ProcessInput() {
@@ -66,23 +75,34 @@ void Game::ProcessInput() {
 }
 
 void Game::Update() {
-    projectilePosX += projectileVelX;
-    projectilePosY += projectileVelY;
+    // wait 16ms
+    int timeToWait = FRAME_TARGET_TIME - (SDL_GetTicks() - ticksLastFrame);
+
+    if (timeToWait > 0 && timeToWait <= FRAME_TARGET_TIME) {
+        SDL_Delay(timeToWait);
+    }
+
+    float deltaTime = (SDL_GetTicks() - ticksLastFrame) / 1000.0f;
+
+    // clamp deltaTime
+    deltaTime = (deltaTime > 0.05f) ? 0.05f : deltaTime;
+
+    ticksLastFrame = SDL_GetTicks();
+
+    // get manager.update
+    manager.Update(deltaTime);
 }
 
 void Game::Render() {
     SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
     SDL_RenderClear(renderer);
 
-    SDL_Rect projectile {
-        (int) projectilePosX,
-        (int) projectilePosY,
-        10,
-        10
-    };
-
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, &projectile);
+    // get manager.render
+    if (manager.HasNoEntities()) {
+        return;
+    } //else {
+        manager.Render();
+    //}
 
     SDL_RenderPresent(renderer);
 }

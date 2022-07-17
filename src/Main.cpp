@@ -6,17 +6,17 @@ using namespace std;
 
 int WinMain(int argc, char *args[]) {  //Why WinMain?!?
 
-    Game *game = new Game();
+    Game game;
 
-    game->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    game.Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    while (game->IsRunning()) {
-        game->ProcessInput();
-        game->Update();
-        game->Render();
+    while (game.IsRunning()) {
+        game.ProcessInput();
+        game.Update();
+        game.Render();
     }
 
-    game->Destroy();
+    game.Destroy();
 
     return 0;
 }
